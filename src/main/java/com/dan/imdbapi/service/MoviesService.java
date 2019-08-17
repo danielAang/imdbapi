@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.repository.MovieRepository;
-import com.dan.imdbapi.repository.MovieTheaterRepository;
 
 /**
  * MoviesService
@@ -23,9 +22,6 @@ public class MoviesService {
 	@Autowired
 	private MovieRepository repository;
 
-	@Autowired
-	private MovieTheaterRepository theaterRepository;
-
 	public List<Movie> getAll() throws ObjectNotFoundException {
 		List<Movie> movies = repository.findAll();
 		if (movies.isEmpty())
@@ -36,12 +32,6 @@ public class MoviesService {
 	public Movie get(String id) throws ObjectNotFoundException {
 		Movie movie = repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Movie not found"));
 		return movie;
-	}
-
-	public List<Movie> getMoviesByMovieTheater(String movieTheaterId) throws ObjectNotFoundException {
-		List<Movie> movies = theaterRepository.findMoviesById(movieTheaterId)
-				.orElseThrow(() -> new ObjectNotFoundException("No movies for this theater"));
-		return movies;
 	}
 
 	public Movie insert(Movie movie) {

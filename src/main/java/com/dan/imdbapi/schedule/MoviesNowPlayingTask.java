@@ -93,7 +93,9 @@ public class MoviesNowPlayingTask {
 				Optional<Movie> optional = movieRepository.findByApiId(movie.getApiId());
 				if (optional.isEmpty()) {
 					Movie _movie = movieRepository.insert(movie);
-					log.info("Movie [" + _movie.getTitle() + "] cadastrado com id: " + _movie.getInternalId());
+					log.info("Movie [" + movie.getTitle() + "] cadastrado com id: " + _movie.getInternalId());
+				} else {
+					log.info("Movie [" + movie.getTitle() + "] já cadastrado");
 				}
 			} catch (Exception e) {
 				log.error("Falha ao tratar filmes: " + e.getMessage());

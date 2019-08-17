@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
@@ -16,6 +17,7 @@ import com.dan.imdbapi.repository.MovieTheaterRepository;
 /**
  * MovieTheaterService
  */
+@Service
 public class MovieTheaterService {
 
 	private static final Logger log = LoggerFactory.getLogger(MovieTheaterService.class);
@@ -54,24 +56,24 @@ public class MovieTheaterService {
 		return repository.findById(id).isEmpty();
 	}
 	
-	public void addMovieToMovieTheater(String movieTheaterId, String movieId) throws ObjectNotFoundException {
+	public void addMovieToMovieTheater(String movieTheaterId, String internalId) throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
-			Movie movie = movieService.get(movieId);
+			Movie movie = movieService.get(internalId);
 			MovieTheater movieTheater = optional.get();
 			movieTheater.getMovies().add(movie);
 			repository.save(movieTheater);
 		}
 	}
 	
-	public void removeMovieFromMovieTheater(String movieTheaterId, String movieId) throws ObjectNotFoundException {
+	public void removeMovieFromMovieTheater(String movieTheaterId, String internalId) throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
 			MovieTheater movieTheater = optional.get();
 			ListIterator<Movie> listIterator = movieTheater.getMovies().listIterator();
 			while (listIterator.hasNext()) {
 				Movie movie = listIterator.next();
-				if (movie.getInternalId().equals(movieId)) {
+				if (movie.getInternalId().equals(internalId)) {
 					listIterator.remove();
 					break;
 				}

@@ -29,23 +29,15 @@ public class MovieController {
 	private MoviesService service;
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Movie> get(@PathVariable("id") String id) {
-		try {
-			Movie movie = service.get(id);
-			return ResponseEntity.status(HttpStatus.OK).body(movie);
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public ResponseEntity<Movie> get(@PathVariable("id") String id) throws ObjectNotFoundException {
+		Movie movie = service.get(id);
+		return ResponseEntity.status(HttpStatus.OK).body(movie);
 	}
 
 	@GetMapping(value = "")
-	public ResponseEntity<List<Movie>> getAll() {
-		try {
-			List<Movie> movies = service.getAll();
-			return ResponseEntity.status(HttpStatus.OK).body(movies);
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public ResponseEntity<List<Movie>> getAll() throws ObjectNotFoundException {
+		List<Movie> movies = service.getAll();
+		return ResponseEntity.status(HttpStatus.OK).body(movies);
 	}
 
 	@PostMapping()

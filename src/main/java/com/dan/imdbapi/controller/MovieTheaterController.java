@@ -24,31 +24,23 @@ import com.dan.imdbapi.service.MovieTheaterService;
 /**
  * MovieTheater
  */
-@RestController
-@RequestMapping(value = "/movietheater")
+@RestController(value = "movietheater")
+@RequestMapping(name = "/movietheater", value = "/movietheater")
 public class MovieTheaterController {
 
 	@Autowired
 	private MovieTheaterService service;
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<MovieTheater> get(@PathParam("id") String id) {
-		try {
-			MovieTheater movie = service.get(id);
-			return ResponseEntity.status(HttpStatus.OK).body(movie);
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public ResponseEntity<MovieTheater> get(@PathVariable("id") String id) throws ObjectNotFoundException {
+		MovieTheater movie = service.get(id);
+		return ResponseEntity.status(HttpStatus.OK).body(movie);
 	}
 
 	@GetMapping(value = "")
-	public ResponseEntity<List<MovieTheater>> getAll() {
-		try {
-			List<MovieTheater> movies = service.getAll();
-			return ResponseEntity.status(HttpStatus.OK).body(movies);
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public ResponseEntity<List<MovieTheater>> getAll() throws ObjectNotFoundException {
+		List<MovieTheater> movies = service.getAll();
+		return ResponseEntity.status(HttpStatus.OK).body(movies);
 	}
 
 	@PostMapping()
@@ -73,35 +65,23 @@ public class MovieTheaterController {
 	}
 
 	@GetMapping(value = "/{id}/movies")
-	public ResponseEntity<List<Movie>> getMoviesFromMovieTheater(@PathVariable("id") String id) {
-		try {
-			MovieTheater movieTheater = service.get(id);
-			return ResponseEntity.status(HttpStatus.OK).body(movieTheater.getMovies());
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public ResponseEntity<List<Movie>> getMoviesFromMovieTheater(@PathVariable("id") String id) throws ObjectNotFoundException {
+		MovieTheater movieTheater = service.get(id);
+		return ResponseEntity.status(HttpStatus.OK).body(movieTheater.getMovies());
 	}
 
-	@PutMapping(value = "/{id}/add_movie/{movieId}")
+	@PutMapping(value = "/{id}/add_movie/{internalId}")
 	public ResponseEntity<Void> addMovieToMovieTheater(@PathVariable("id") String movieTheaterId,
-			@PathVariable("movieId") String movieId) {
-		try {
-			service.addMovieToMovieTheater(movieTheaterId, movieId);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+			@PathVariable("internalId") String movieId) throws ObjectNotFoundException {
+		service.addMovieToMovieTheater(movieTheaterId, movieId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
-	
-	@PutMapping(value = "/{id}/remove_movie/{movieId}")
+
+	@PutMapping(value = "/{id}/remove_movie/{internalId}")
 	public ResponseEntity<MovieTheater> removeMovieToMovieTheater(@PathVariable("id") String movieTheaterId,
-			@PathVariable("movieId") String movieId) {
-		try {
-			service.removeMovieFromMovieTheater(movieTheaterId, movieId);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		} catch (ObjectNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+			@PathVariable("internalId") String movieId) throws ObjectNotFoundException {
+		service.removeMovieFromMovieTheater(movieTheaterId, movieId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 }

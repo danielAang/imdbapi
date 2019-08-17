@@ -1,5 +1,6 @@
 package com.dan.imdbapi.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class MovieTheater {
 
 	private String name;
 
-	private List<Movie> movies;
+	private List<Movie> movies = new ArrayList<Movie> ();
 
 	private String address;
 
