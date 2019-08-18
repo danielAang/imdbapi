@@ -1,0 +1,48 @@
+[
+	{
+    "exibithions": null,
+    "internalId": "5d585dce83694d125d7cec40",
+    "id": "420818",
+    "title": "O Rei Leão",
+    "overview": "Mufasa é o rei na savana africana, respeitado por outros animais e temido por inimigos. Seu filho, Simba, tem o pai como ídolo e aprendeu com ele sobre o ciclo da vida e a importância de manter a harmonia e dar continuidade ao reinado da Pedra do Reino. Por outro lado, o invejoso tio Scar, ex-herdeiro do trono e irmão de Mufasa, não dava a mínima para a tradição, conseguiu fazer com que o sobrinho fosse exilado, e assim assumiu o poder. Longe de casa e de todos, Simba criou fortes laços com o lêmure Timão e o javali Pumba, dois novos e fiéis amigos. Juntos, eles viverão uma jornada de descobertas e crescimento, culminando com o retorno do adulto Simba para seu lugar de verdadeiro rei.",
+    "poster_path": "/devZdyPRXMiN8HHiX7Y8s0LLEee.jpg",
+    "vote_average": 7,
+    "original_language": "en",
+    "original_title": "The Lion King",
+    "backdrop_path": "/1TUg5pO1VZ4B0Q1amk3OlXvlpXV.jpg",
+    "release_date": "2019-07-18T00:00:00.000+0000",
+    "genres": null,
+    "genre_ids": [
+      12,
+      16,
+      10751,
+      18,
+      28
+    ],
+    "production_countries": null,
+    "spoken_languages": null
+  },
+  {
+    "exibithions": null,
+    "internalId": "5d585dde83694d125d7cec41",
+    "id": "466272",
+    "title": "Era uma vez em Hollywood",
+    "overview": "Um ator de televisão e seu dublê embarcam em uma odisséia para fazerem seus nomes na indústria cinematográfica durante os assassinatos de Charles Manson em 1969, Los Angeles.",
+    "poster_path": "/foEOVg4HQl2VzKzTh27CAHmXyg.jpg",
+    "vote_average": 7,
+    "original_language": "en",
+    "original_title": "Once Upon a Time in Hollywood",
+    "backdrop_path": "/b82nVVhYNRgtsTFV1jkdDwe6LJZ.jpg",
+    "release_date": "2019-08-15T00:00:00.000+0000",
+    "genres": null,
+    "genre_ids": [
+      18,
+      35,
+      28,
+      80,
+      37
+    ],
+    "production_countries": null,
+    "spoken_languages": null
+  }
+]

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +23,15 @@ import com.dan.imdbapi.service.MoviesService;
  * MovieController
  */
 @RestController(value = "movie")
-@RequestMapping(name = "/movie", value = "/movie")
+@RequestMapping(name = "/movie", value = "/movie", consumes = { MediaType.APPLICATION_JSON_VALUE,
+		MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
+				MediaType.APPLICATION_JSON_UTF8_VALUE })
 public class MovieController {
 
 	@Autowired
 	private MoviesService service;
 
-	@GetMapping("/{id}")
+	@GetMapping(value = "/{id}")
 	public ResponseEntity<Movie> get(@PathVariable("id") String id) throws ObjectNotFoundException {
 		Movie movie = service.get(id);
 		return ResponseEntity.status(HttpStatus.OK).body(movie);
@@ -53,7 +56,7 @@ public class MovieController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable(value = "id", required = true) String id) {
 		boolean isDeleted = service.delete(id);
 		if (isDeleted)
 			return ResponseEntity.status(HttpStatus.OK).build();

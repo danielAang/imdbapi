@@ -6,6 +6,7 @@ import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,9 @@ import com.dan.imdbapi.service.MovieTheaterService;
  * MovieTheater
  */
 @RestController(value = "movietheater")
-@RequestMapping(name = "/movietheater", value = "/movietheater")
+@RequestMapping(name = "/movietheater", value = "/movietheater", consumes = { MediaType.APPLICATION_JSON_VALUE,
+		MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
+				MediaType.APPLICATION_JSON_UTF8_VALUE })
 public class MovieTheaterController {
 
 	@Autowired
@@ -65,7 +68,8 @@ public class MovieTheaterController {
 	}
 
 	@GetMapping(value = "/{id}/movies")
-	public ResponseEntity<List<Movie>> getMoviesFromMovieTheater(@PathVariable("id") String id) throws ObjectNotFoundException {
+	public ResponseEntity<List<Movie>> getMoviesFromMovieTheater(@PathVariable("id") String id)
+			throws ObjectNotFoundException {
 		MovieTheater movieTheater = service.get(id);
 		return ResponseEntity.status(HttpStatus.OK).body(movieTheater.getMovies());
 	}

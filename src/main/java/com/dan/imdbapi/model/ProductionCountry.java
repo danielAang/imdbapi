@@ -1,8 +1,11 @@
 package com.dan.imdbapi.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+@Document
 @JsonRootName("production_countries")
 public class ProductionCountry {
 

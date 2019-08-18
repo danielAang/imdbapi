@@ -1,11 +1,14 @@
 package com.dan.imdbapi.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
  * SpokenLanguages
  */
+@Document
 @JsonRootName("spoken_languages")
 public class SpokenLanguages {
 

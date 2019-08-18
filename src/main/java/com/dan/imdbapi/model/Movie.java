@@ -4,15 +4,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Document
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movie {
 
 	@Id
-	@JsonProperty("internalId")	
+	@JsonProperty("internalId")
 	private String internalId;
 
 	@JsonProperty("id")
@@ -55,6 +57,25 @@ public class Movie {
 	private List<SpokenLanguages> spokenLanguages;
 
 	private List<Date> exibithions;
+
+	public Movie() {
+
+	}
+
+	public Movie(String apiId, String title, String overview) {
+		super();
+		this.apiId = apiId;
+		this.title = title;
+		this.overview = overview;
+	}
+
+	public Movie(String internalId, String apiId, String title, String overview) {
+		super();
+		this.internalId = internalId;
+		this.apiId = apiId;
+		this.title = title;
+		this.overview = overview;
+	}
 
 	public String getInternalId() {
 		return internalId;
