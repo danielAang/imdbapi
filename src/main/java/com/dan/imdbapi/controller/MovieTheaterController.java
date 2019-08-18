@@ -2,8 +2,6 @@ package com.dan.imdbapi.controller;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,7 +57,7 @@ public class MovieTheaterController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathParam("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable(value = "id", required = true) String id) {
 		boolean isDeleted = service.delete(id);
 		if (isDeleted)
 			return ResponseEntity.status(HttpStatus.OK).build();
