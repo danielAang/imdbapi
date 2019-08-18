@@ -1,6 +1,7 @@
-package com.dan.imdbapi;
+package com.dan.imdbapi.unit.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.dan.imdbapi.exception.ObjectNotFoundException;
-import com.dan.imdbapi.model.Movie;
+import com.dan.imdbapi.model.MovieTheater;
 import com.dan.imdbapi.service.MovieTheaterService;
 import com.dan.imdbapi.service.MoviesService;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -36,8 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest
 @RunWith(SpringRunner.class)
-public class MovieControllerTest {
-
+public class MovieTheaterControllerTest {
+	
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -47,63 +48,63 @@ public class MovieControllerTest {
 	@MockBean
 	private MovieTheaterService movieTheaterService;
 	
-	@Value("classpath:movie.json")
+	@Value("classpath:movieTheater.json")
 	private Resource movieJSON;
 
-	private List<Movie> movies;
-	private Movie lionKing;
+	private List<MovieTheater> movieTheaters;
+	private MovieTheater roseSilva;
 
 	@Before
 	public void before() throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		lionKing = mapper.readValue(movieJSON.getInputStream(), Movie.class);
-		movies = List.of(lionKing);
+		roseSilva = mapper.readValue(movieJSON.getInputStream(), MovieTheater.class);
+		movieTheaters = List.of(roseSilva);
 	}
 
 	@Test
 	public void testGet() throws Exception {
-		Mockito.when(movieService.get(lionKing.getInternalId())).thenReturn(lionKing);
-		mockMvc.perform(get("/movie/" + lionKing.getInternalId()).contentType(MediaType.APPLICATION_JSON))
+		Mockito.when(movieTheaterService.get(anyString())).thenReturn(roseSilva);
+		mockMvc.perform(get("/movietheater/" + roseSilva.getId()).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.internalId", is(lionKing.getInternalId())));
+			.andExpect(jsonPath("$.id", is(roseSilva.getId())));
 	}
 
 	@Test
 	public void testGetAll() throws Exception {
-		Mockito.when(movieService.getAll()).thenReturn(movies);
-		mockMvc.perform(get("/movie").contentType(MediaType.APPLICATION_JSON))
+		Mockito.when(movieTheaterService.getAll()).thenReturn(movieTheaters);
+		mockMvc.perform(get("/movietheater").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
 	public void testGetAllNoneWasFound() throws Exception {
-		Mockito.when(movieService.getAll()).thenThrow(ObjectNotFoundException.class);
-		mockMvc.perform(get("/movie").contentType(MediaType.APPLICATION_JSON))
+		Mockito.when(movieTheaterService.getAll()).thenThrow(ObjectNotFoundException.class);
+		mockMvc.perform(get("/movietheater").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 	}
 	
 	@Test
 	public void testPost() throws Exception {
-		JSONObject js = new JSONObject(lionKing);
-		Mockito.when(movieService.insert(Mockito.any(Movie.class))).thenReturn(lionKing);
-		mockMvc.perform(post("/movie")
+		JSONObject js = new JSONObject(roseSilva);
+		Mockito.when(movieTheaterService.insert(Mockito.any(MovieTheater.class))).thenReturn(roseSilva);
+		mockMvc.perform(post("/movietheater")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(js.toString())
 			.characterEncoding("UTF-8")
 			.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.internalId", is(lionKing.getInternalId())));
+			.andExpect(jsonPath("$.id", is(roseSilva.getId())));
 	}
 	
 	@Test
 	public void testPut() throws Exception {
-		JSONObject js = new JSONObject(lionKing);
-		Mockito.when(movieService.update(Mockito.any(Movie.class))).thenReturn(lionKing);
-		mockMvc.perform(put("/movie")
+		JSONObject js = new JSONObject(roseSilva);
+		Mockito.when(movieTheaterService.update(Mockito.any(MovieTheater.class))).thenReturn(roseSilva);
+		mockMvc.perform(put("/movietheater")
 			.contentType(MediaType.APPLICATION_JSON)
 			.characterEncoding("UTF-8")
 			.accept(MediaType.APPLICATION_JSON)
@@ -111,11 +112,11 @@ public class MovieControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 	}
-	
+
 	@Test
 	public void testDelete() throws Exception {
-		Mockito.when(movieService.delete(Mockito.anyString())).thenReturn(true);
-		mockMvc.perform(delete("/movie/{id}", lionKing.getApiId())
+		Mockito.when(movieTheaterService.delete(Mockito.anyString())).thenReturn(true);
+		mockMvc.perform(delete("/movietheater/{id}", roseSilva.getId())
 			.contentType(MediaType.APPLICATION_JSON)
 			.characterEncoding("UTF-8")
 			.accept(MediaType.APPLICATION_JSON))

@@ -18,13 +18,19 @@ public class MovieTheater {
 
 	private String name;
 
-	private List<Movie> movies = new ArrayList<Movie> ();
+	private List<Movie> movies = new ArrayList<Movie>();
 
 	private String address;
 
 	private Date createdAt;
 
 	private Date updatedAt;
+
+	public MovieTheater(String id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
 
 	public String getId() {
 		return id;
