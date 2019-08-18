@@ -32,28 +32,38 @@ public class MovieTheaterService {
 		List<MovieTheater> movies = repository.findAll();
 		if (movies.isEmpty())
 			throw new ObjectNotFoundException("No theaters found");
+		log.info("Retrieving all MovieTheaters");
 		return movies;
 	}
 
 	public MovieTheater get(String id) throws ObjectNotFoundException {
 		MovieTheater movie = repository.findById(id)
 				.orElseThrow(() -> new ObjectNotFoundException("Theaters not found"));
+		log.info(String.format("Retrieving MovieTheater %s", id));
 		return movie;
 	}
 
-	public MovieTheater insert(MovieTheater movie) {
-		MovieTheater _movie = repository.insert(movie);
-		return _movie;
+	public MovieTheater insert(MovieTheater movieTheater) {
+		MovieTheater _movieTheater = repository.insert(movieTheater);
+		log.info(String.format("MovieTheater inserted with id %s", _movieTheater.getId()));
+		return _movieTheater;
 	}
 
 	public MovieTheater update(MovieTheater movie) {
 		MovieTheater _movie = repository.save(movie);
+		log.info(String.format("MovieTheater %s updated", _movie.getId()));
 		return _movie;
 	}
 
 	public boolean delete(String id) {
-		repository.deleteById(id);
-		return repository.findById(id).isEmpty();
+		if (repository.findById(id).isEmpty()) {
+			log.info(String.format("Attempt to delete MovieTheater %s, but none was found by given id", id));
+			return false;
+		} else { 
+			repository.deleteById(id);
+			log.info(String.format("MovieTheater %s deleted", id));
+			return true;
+		}
 	}
 	
 	public void addMovieToMovieTheater(String movieTheaterId, String internalId) throws ObjectNotFoundException {
