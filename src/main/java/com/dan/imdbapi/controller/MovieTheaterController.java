@@ -1,5 +1,6 @@
 package com.dan.imdbapi.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dan.imdbapi.dto.ExhibitionDate;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.model.MovieTheater;
@@ -83,6 +85,12 @@ public class MovieTheaterController {
 	public ResponseEntity<MovieTheater> removeMovieToMovieTheater(@PathVariable("id") String movieTheaterId,
 			@PathVariable("internalId") String movieId) throws ObjectNotFoundException {
 		service.removeMovieFromMovieTheater(movieTheaterId, movieId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@PutMapping(value = "/{id}/movie/{internalId}/setDates")
+	public ResponseEntity<Void> addExibithionDate(@RequestBody List<ExhibitionDate> dates) {
+		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 

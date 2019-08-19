@@ -122,4 +122,9 @@ public class MovieTheaterControllerTest {
 			.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testAddExibithionDate() {
+		
+	}
 }

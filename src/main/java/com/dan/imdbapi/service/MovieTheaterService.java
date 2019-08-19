@@ -1,5 +1,6 @@
 package com.dan.imdbapi.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dan.imdbapi.dto.ExhibitionDate;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.model.MovieTheater;
@@ -44,15 +46,17 @@ public class MovieTheaterService {
 	}
 
 	public MovieTheater insert(MovieTheater movieTheater) {
+		movieTheater.setCreatedAt(new Date());
 		MovieTheater _movieTheater = repository.insert(movieTheater);
 		log.info(String.format("MovieTheater inserted with id %s", _movieTheater.getId()));
 		return _movieTheater;
 	}
 
-	public MovieTheater update(MovieTheater movie) {
-		MovieTheater _movie = repository.save(movie);
-		log.info(String.format("MovieTheater %s updated", _movie.getId()));
-		return _movie;
+	public MovieTheater update(MovieTheater movieTheater) {
+		movieTheater.setUpdatedAt(new Date());
+		MovieTheater _movieTheater = repository.save(movieTheater);
+		log.info(String.format("MovieTheater %s updated", _movieTheater.getId()));
+		return _movieTheater;
 	}
 
 	public boolean delete(String id) {
@@ -66,29 +70,58 @@ public class MovieTheaterService {
 		}
 	}
 	
-	public void addMovieToMovieTheater(String movieTheaterId, String internalId) throws ObjectNotFoundException {
+	public void addMovieToMovieTheater(String movieTheaterId, String movieInternalId) throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
-			Movie movie = movieService.get(internalId);
 			MovieTheater movieTheater = optional.get();
-			movieTheater.getMovies().add(movie);
-			repository.save(movieTheater);
+			Movie movie = movieService.get(movieInternalId);
+			if (!movieTheater.getMovies().contains(movie)) {
+				movieTheater.getMovies().add(movie);
+				repository.save(movieTheater);
+			}
 		}
 	}
 	
-	public void removeMovieFromMovieTheater(String movieTheaterId, String internalId) throws ObjectNotFoundException {
+	public void removeMovieFromMovieTheater(String movieTheaterId, String movieInternalId) throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
 			MovieTheater movieTheater = optional.get();
 			ListIterator<Movie> listIterator = movieTheater.getMovies().listIterator();
 			while (listIterator.hasNext()) {
 				Movie movie = listIterator.next();
-				if (movie.getInternalId().equals(internalId)) {
+				if (movie.getInternalId().equals(movieInternalId)) {
 					listIterator.remove();
 					break;
 				}
 			}
 			repository.save(movieTheater);
+		}
+	}
+	
+	public void addExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates) throws ObjectNotFoundException {
+		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
+		if (optional.isPresent()) {
+			log.info("Movie found");
+			MovieTheater movieTheater = optional.get();
+			movieTheater.getMovies().forEach(m -> {
+				log.info("%s", m);
+				if (movieInternalId.equals(m.getInternalId())) {
+					m.setExhibitionDates(dates);
+					log.info(String.format("Adding exhibition date to Movie %s", m.getInternalId()));
+				}
+			});
+			repository.save(movieTheater);
+		}
+	}
+	
+	public void removeExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates) throws ObjectNotFoundException {
+		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
+		if (optional.isPresent()) {
+			MovieTheater movieTheater = optional.get();
+			Optional<Movie> movie = movieTheater.getMovies().stream().filter(m -> movieInternalId.equals(m.getInternalId())).findFirst();
+			if (movie.isPresent()) {
+				movie.get().getExhibitionDates().removeAll(dates);
+			}
 		}
 	}
 

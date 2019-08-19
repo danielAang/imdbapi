@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.dan.imdbapi.dto.ExhibitionDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -56,7 +57,7 @@ public class Movie {
 	@JsonProperty("spoken_languages")
 	private List<SpokenLanguages> spokenLanguages;
 
-	private List<Date> exibithions;
+	private List<ExhibitionDate> exhibitionDates;
 
 	public Movie() {
 
@@ -185,12 +186,37 @@ public class Movie {
 		this.spokenLanguages = spokenLanguages;
 	}
 
-	public List<Date> getExibithions() {
-		return exibithions;
+	public List<ExhibitionDate> getExhibitionDates() {
+		return exhibitionDates;
 	}
 
-	public void setExibithions(List<Date> exibithions) {
-		this.exibithions = exibithions;
+	public void setExhibitionDates(List<ExhibitionDate> exibithions) {
+		this.exhibitionDates = exibithions;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((internalId == null) ? 0 : internalId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Movie other = (Movie) obj;
+		if (internalId == null) {
+			if (other.internalId != null)
+				return false;
+		} else if (!internalId.equals(other.internalId))
+			return false;
+		return true;
 	}
 
 	@Override

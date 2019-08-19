@@ -2,6 +2,7 @@ package com.dan.imdbapi.schedule;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,14 @@ import com.dan.imdbapi.repository.MovieRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Class that handles the job of getting movies from the imdb api. This class
+ * runs by schedule, starting 3seg after application startup and runs again
+ * 10min after last completed execution
+ * 
+ * @author daniel
+ *
+ */
 @Component
 public class MoviesNowPlayingTask {
 
@@ -41,7 +50,7 @@ public class MoviesNowPlayingTask {
 	@Scheduled(zone = "America/Recife", fixedDelay = 600000, initialDelay = 3000)
 	public void getMovies() {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		log.info("Iniciando tarefa agendada em " + formatter.format(new Date()));
+		log.info(String.format("Starting scheduled task at %s", formatter.format(new Date())));
 		Integer currentPage = 1;
 		Integer totalPages = 1000;
 		RestTemplate restTemplate = new RestTemplate();
@@ -50,7 +59,7 @@ public class MoviesNowPlayingTask {
 
 		try {
 			do {
-				log.info("Acessando url: " + url);
+				log.info(String.format("Accessing url: %s", url));
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
 				if (HttpStatus.OK.equals(response.getStatusCode())) {
 					JSONObject data = response.hasBody() ? new JSONObject(response.getBody()) : null;
@@ -70,11 +79,17 @@ public class MoviesNowPlayingTask {
 				Thread.sleep(20000);
 			} while (currentPage <= totalPages);
 		} catch (Exception e) {
-			log.error("Falha na execução da tarefa agendada: " + e.getMessage());
+			log.error(String.format("Execution of scheduled task failed at %s: ", e.getMessage()));
 		}
-		log.info("Tarefa concluída em: " + formatter.format(new Date()));
+		log.info(String.format("Scheduled task endeded at: %s", formatter.format(new Date())));
 	}
 
+	/**
+	 * Convert a json array with movies to a list of movies
+	 * 
+	 * @param results JSONArray containing data from imdb api
+	 * @return A list of movies or a empty array in case of error
+	 */
 	private List<Movie> getMoviesFromResult(JSONArray results) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -82,23 +97,28 @@ public class MoviesNowPlayingTask {
 			});
 			return movies;
 		} catch (IOException e) {
-			log.error("Erro ao transformar jsonArray em List<Movie>.: " + e.getMessage());
+			log.error(String.format("Error during List<Movie> transformation: %s", e.getMessage()));
 		}
-		return null;
+		return Arrays.asList();
 	}
 
+	/**
+	 * Save movies only if they already aren't on database
+	 * 
+	 * @param movies List of movies from the api
+	 */
 	private void checkAndSaveMovies(List<Movie> movies) {
 		for (Movie movie : movies) {
 			try {
 				Optional<Movie> optional = movieRepository.findByApiId(movie.getApiId());
 				if (optional.isEmpty()) {
 					Movie _movie = movieRepository.insert(movie);
-					log.info("Movie [" + movie.getTitle() + "] cadastrado com id: " + _movie.getInternalId());
+					log.info(String.format("Movie [%s] inserted with id: ", movie.getTitle(), _movie.getInternalId()));
 				} else {
-					log.info("Movie [" + movie.getTitle() + "] já cadastrado");
+					log.info(String.format("Movie [%s] already inserted", movie.getTitle()));
 				}
 			} catch (Exception e) {
-				log.error("Falha ao tratar filmes: " + e.getMessage());
+				log.error(String.format("Failing when saving movies: %s", e.getMessage()));
 			}
 		}
 	}
