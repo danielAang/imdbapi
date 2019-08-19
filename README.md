@@ -2,7 +2,7 @@
 
 Projeto para Much More
 
-## Instalação
+## Instalação :arrow_down:
 
 Clone o repositório e execute via java
 
@@ -10,9 +10,10 @@ Clone o repositório e execute via java
 git clone https://github.com/danielAang/imdbapi.git
 ```
 
-## Executando
+## Executando :runner:
+
+Dentro da pasta do projeto, execute
 
 ```java
-
 java -jar target/imdbapi-0.0.1-SNAPSHOT.jar
 ```
