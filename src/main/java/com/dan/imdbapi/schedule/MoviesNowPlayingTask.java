@@ -1,6 +1,5 @@
 package com.dan.imdbapi.schedule;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,12 +37,15 @@ public class MoviesNowPlayingTask {
 
 	@Autowired
 	private MovieRepository movieRepository;
-
 	@Value("${moviedb.url.now_playing}")
 	private String moviesNowPlaying;
-
 	@Value("${moviedb.secret}")
+
 	private String moviedbSecret;
+	private RestTemplate restTemplate = new RestTemplate();
+	private static final String URL = "%s?api_key%s&language=pt-BR&page=%s&region=BR";
+	private Integer currentPage = 1;
+	private Integer totalPages = 1000;
 
 	private static final Logger log = LoggerFactory.getLogger(MoviesNowPlayingTask.class);
 
@@ -51,11 +53,7 @@ public class MoviesNowPlayingTask {
 	public void getMovies() {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		log.info(String.format("Starting scheduled task at %s", formatter.format(new Date())));
-		Integer currentPage = 1;
-		Integer totalPages = 1000;
-		RestTemplate restTemplate = new RestTemplate();
-		String format = "%s?api_key%s&language=pt-BR&page=%s&region=BR";
-		String url = String.format(format, moviesNowPlaying, moviedbSecret, currentPage);
+		String url = String.format(URL, moviesNowPlaying, moviedbSecret, currentPage);
 
 		try {
 			do {
@@ -70,12 +68,14 @@ public class MoviesNowPlayingTask {
 					checkAndSaveMovies(movies);
 					totalPages = data.getInt("total_pages");
 					currentPage += 1;
-					url = String.format(format, moviesNowPlaying, moviedbSecret, currentPage);
+					url = String.format(URL, moviesNowPlaying, moviedbSecret, currentPage);
 				} else {
 					break;
 				}
+				// The api documentation limits the amount of pages to 1000
 				if (totalPages > 1000)
 					break;
+				// Due to api request limitation, set Thread.sleep to avoid problems
 				Thread.sleep(20000);
 			} while (currentPage <= totalPages);
 		} catch (Exception e) {
@@ -96,8 +96,8 @@ public class MoviesNowPlayingTask {
 			List<Movie> movies = mapper.readValue(results.toString(), new TypeReference<List<Movie>>() {
 			});
 			return movies;
-		} catch (IOException e) {
-			log.error(String.format("Error during List<Movie> transformation: %s", e.getMessage()));
+		} catch (Exception e) {
+			log.error(String.format("Error during List<Movie> transformation"), e);
 		}
 		return Arrays.asList();
 	}
@@ -111,9 +111,9 @@ public class MoviesNowPlayingTask {
 		for (Movie movie : movies) {
 			try {
 				Optional<Movie> optional = movieRepository.findByApiId(movie.getApiId());
-				if (optional.isEmpty()) {
-					Movie _movie = movieRepository.insert(movie);
-					log.info(String.format("Movie [%s] inserted with id: ", movie.getTitle(), _movie.getInternalId()));
+				if (!optional.isPresent()) {
+					Movie insertedMovie = movieRepository.insert(movie);
+					log.info(String.format("Movie [%s] inserted with id: ", movie.getTitle(), insertedMovie.getInternalId()));
 				} else {
 					log.info(String.format("Movie [%s] already inserted", movie.getTitle()));
 				}

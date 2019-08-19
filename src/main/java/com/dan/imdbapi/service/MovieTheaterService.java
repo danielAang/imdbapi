@@ -26,7 +26,7 @@ public class MovieTheaterService {
 
 	@Autowired
 	private MovieTheaterRepository repository;
-	
+
 	@Autowired
 	private MoviesService movieService;
 
@@ -39,8 +39,7 @@ public class MovieTheaterService {
 	}
 
 	public MovieTheater get(String id) throws ObjectNotFoundException {
-		MovieTheater movie = repository.findById(id)
-				.orElseThrow(() -> new ObjectNotFoundException("Theaters not found"));
+		MovieTheater movie = repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Theaters not found"));
 		log.info(String.format("Retrieving MovieTheater %s", id));
 		return movie;
 	}
@@ -60,16 +59,16 @@ public class MovieTheaterService {
 	}
 
 	public boolean delete(String id) {
-		if (repository.findById(id).isEmpty()) {
+		if (!repository.findById(id).isPresent()) {
 			log.info(String.format("Attempt to delete MovieTheater %s, but none was found by given id", id));
 			return false;
-		} else { 
+		} else {
 			repository.deleteById(id);
 			log.info(String.format("MovieTheater %s deleted", id));
 			return true;
 		}
 	}
-	
+
 	public void addMovieToMovieTheater(String movieTheaterId, String movieInternalId) throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
@@ -81,15 +80,16 @@ public class MovieTheaterService {
 			}
 		}
 	}
-	
-	public void removeMovieFromMovieTheater(String movieTheaterId, String movieInternalId) throws ObjectNotFoundException {
+
+	public void removeMovieFromMovieTheater(String movieTheaterId, String movieInternalId)
+			throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
 			MovieTheater movieTheater = optional.get();
 			ListIterator<Movie> listIterator = movieTheater.getMovies().listIterator();
 			while (listIterator.hasNext()) {
 				Movie movie = listIterator.next();
-				if (movie.getInternalId().equals(movieInternalId)) {
+				if (movieInternalId.equals(movie.getInternalId())) {
 					listIterator.remove();
 					break;
 				}
@@ -97,14 +97,14 @@ public class MovieTheaterService {
 			repository.save(movieTheater);
 		}
 	}
-	
-	public void addExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates) throws ObjectNotFoundException {
+
+	public void addExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates)
+			throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
 			log.info("Movie found");
 			MovieTheater movieTheater = optional.get();
 			movieTheater.getMovies().forEach(m -> {
-				log.info("%s", m);
 				if (movieInternalId.equals(m.getInternalId())) {
 					m.setExhibitionDates(dates);
 					log.info(String.format("Adding exhibition date to Movie %s", m.getInternalId()));
@@ -113,15 +113,19 @@ public class MovieTheaterService {
 			repository.save(movieTheater);
 		}
 	}
-	
-	public void removeExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates) throws ObjectNotFoundException {
+
+	public void removeExibithionDate(String movieTheaterId, String movieInternalId, List<ExhibitionDate> dates)
+			throws ObjectNotFoundException {
 		Optional<MovieTheater> optional = repository.findById(movieTheaterId);
 		if (optional.isPresent()) {
 			MovieTheater movieTheater = optional.get();
-			Optional<Movie> movie = movieTheater.getMovies().stream().filter(m -> movieInternalId.equals(m.getInternalId())).findFirst();
-			if (movie.isPresent()) {
-				movie.get().getExhibitionDates().removeAll(dates);
+			Optional<Movie> optionalMovie = movieTheater.getMovies().stream().filter(m -> movieInternalId.equals(m.getInternalId()))
+					.findFirst();
+			if (optionalMovie.isPresent()) {
+				Movie movie = optionalMovie.get();
+				movie.getExhibitionDates().removeAll(dates);
 			}
+			repository.save(movieTheater);
 		}
 	}
 

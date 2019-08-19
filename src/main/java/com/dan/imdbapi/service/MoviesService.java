@@ -49,7 +49,7 @@ public class MoviesService {
 	}
 
 	public boolean delete(String id) {
-		if (repository.findById(id).isEmpty()) {
+		if (repository.findById(id).isPresent()) {
 			log.info(String.format("Attempt to delete Movie %s, but none was found by given id", id));
 			return false;
 		} else {

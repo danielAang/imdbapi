@@ -1,7 +1,8 @@
 package com.dan.imdbapi.controller;
 
-import java.util.Date;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,24 +75,33 @@ public class MovieTheaterController {
 		return ResponseEntity.status(HttpStatus.OK).body(movieTheater.getMovies());
 	}
 
-	@PutMapping(value = "/{id}/add_movie/{internalId}")
+	@PutMapping(value = "/{id}/addMovie/{internalId}")
 	public ResponseEntity<Void> addMovieToMovieTheater(@PathVariable("id") String movieTheaterId,
 			@PathVariable("internalId") String movieId) throws ObjectNotFoundException {
 		service.addMovieToMovieTheater(movieTheaterId, movieId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PutMapping(value = "/{id}/remove_movie/{internalId}")
+	@PutMapping(value = "/{id}/removeMovie/{internalId}")
 	public ResponseEntity<MovieTheater> removeMovieToMovieTheater(@PathVariable("id") String movieTheaterId,
 			@PathVariable("internalId") String movieId) throws ObjectNotFoundException {
 		service.removeMovieFromMovieTheater(movieTheaterId, movieId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
-	
-	@PutMapping(value = "/{id}/movie/{internalId}/setDates")
-	public ResponseEntity<Void> addExibithionDate(@RequestBody List<ExhibitionDate> dates) {
-		
+
+	@PutMapping(value = "/{id}/movie/{movieInternalId}/setDates")
+	public ResponseEntity<Void> addExibithionDate(@PathVariable("id") String movieTheaterId,
+			@PathVariable("movieInternalId") String movieInternalId, @RequestBody List<ExhibitionDate> dates)
+			throws ObjectNotFoundException {
+		service.addExibithionDate(movieTheaterId, movieInternalId, dates);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@PutMapping(value = "/{id}/movie/{movieInternalId}/removeDates")
+	public ResponseEntity<Void> removeExibithionDate(@PathVariable("id") String movieTheaterId,
+			@PathVariable("movieInternalId") String movieInternalId, @Valid @RequestBody List<ExhibitionDate> dates)
+			throws ObjectNotFoundException {
+		service.removeExibithionDate(movieTheaterId, movieInternalId, dates);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

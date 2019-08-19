@@ -9,10 +9,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +31,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.dan.imdbapi.dto.ExhibitionDate;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
+import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.model.MovieTheater;
 import com.dan.imdbapi.service.MovieTheaterService;
 import com.dan.imdbapi.service.MoviesService;
@@ -49,16 +55,24 @@ public class MovieTheaterControllerTest {
 	private MovieTheaterService movieTheaterService;
 	
 	@Value("classpath:movieTheater.json")
+	private Resource movieTheaterJSON;
+	
+	@Value("classpath:movie.json")
 	private Resource movieJSON;
 
+	public List<ExhibitionDate> exhibitionDates;
 	private List<MovieTheater> movieTheaters;
 	private MovieTheater roseSilva;
+	private Movie lionKing;
 
 	@Before
 	public void before() throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		roseSilva = mapper.readValue(movieJSON.getInputStream(), MovieTheater.class);
-		movieTheaters = List.of(roseSilva);
+		
+		exhibitionDates = Arrays.asList(new ExhibitionDate(new Date()), new ExhibitionDate(new Date()));
+		roseSilva = mapper.readValue(movieTheaterJSON.getInputStream(), MovieTheater.class);
+		lionKing = mapper.readValue(movieJSON.getInputStream(), Movie.class);
+		movieTheaters = Arrays.asList(roseSilva);
 	}
 
 	@Test
@@ -124,7 +138,26 @@ public class MovieTheaterControllerTest {
 	}
 	
 	@Test
-	public void testAddExibithionDate() {
-		
+	public void testAddExibithionDate() throws Exception {
+		String jsonArray =  "[{\"exhibition\": \"19/08/2019 14:11\"},{\"exhibition\": \"19/08/2019 18:11\"},{\"exhibition\": \"20/08/2019 10:00\"}]";
+		Mockito.doNothing().when(movieTheaterService).addExibithionDate(anyString(), anyString(), Mockito.any());
+		mockMvc.perform(put("/movietheater/{id}/movie/{movieInternalId}/setDates", roseSilva.getId(), lionKing.getInternalId())
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(jsonArray.toString())
+			.characterEncoding("UTF-8")
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isNoContent());
+	}
+	
+	@Test
+	public void testRemoveExibithionDate() throws Exception {
+		String jsonArray =  "[{\"exhibition\": \"19/08/2019 14:11\"},{\"exhibition\": \"19/08/2019 18:11\"},{\"exhibition\": \"20/08/2019 10:00\"}]";
+		Mockito.doNothing().when(movieTheaterService).removeExibithionDate(anyString(), anyString(), Mockito.any());
+		mockMvc.perform(put("/movietheater/{id}/movie/{movieInternalId}/removeDates", roseSilva.getId(), lionKing.getInternalId())
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(jsonArray)
+			.characterEncoding("UTF-8")
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isNoContent());
 	}
 }

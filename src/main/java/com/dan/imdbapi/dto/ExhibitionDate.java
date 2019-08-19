@@ -9,6 +9,10 @@ public class ExhibitionDate {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date exhibition;
 
+	public ExhibitionDate() {
+		super();
+	}
+
 	public ExhibitionDate(Date exhibition) {
 		super();
 		this.exhibition = exhibition;

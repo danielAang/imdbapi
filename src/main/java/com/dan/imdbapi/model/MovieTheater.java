@@ -25,6 +25,10 @@ public class MovieTheater {
 	private Date createdAt;
 
 	private Date updatedAt;
+	
+	public MovieTheater() {
+		super();
+	}
 
 	public MovieTheater(String id, String name) {
 		super();
@@ -49,8 +53,9 @@ public class MovieTheater {
 	}
 
 	public List<Movie> getMovies() {
-		if (movies == null)
-			return new ArrayList<Movie>();
+		if (movies == null) {
+			movies = new ArrayList<Movie>();
+		}
 		return movies;
 	}
 

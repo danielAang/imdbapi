@@ -1,5 +1,6 @@
 package com.dan.imdbapi.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -187,6 +188,8 @@ public class Movie {
 	}
 
 	public List<ExhibitionDate> getExhibitionDates() {
+		if (exhibitionDates == null)
+			exhibitionDates = new ArrayList<ExhibitionDate>();
 		return exhibitionDates;
 	}
 

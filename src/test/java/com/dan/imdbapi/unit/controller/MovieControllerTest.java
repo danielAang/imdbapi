@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -57,7 +58,7 @@ public class MovieControllerTest {
 	public void before() throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		lionKing = mapper.readValue(movieJSON.getInputStream(), Movie.class);
-		movies = List.of(lionKing);
+		movies = Arrays.asList(lionKing);
 	}
 
 	@Test
@@ -72,7 +73,8 @@ public class MovieControllerTest {
 	@Test
 	public void testGetAll() throws Exception {
 		Mockito.when(movieService.getAll()).thenReturn(movies);
-		mockMvc.perform(get("/movie").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/movie")
+			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 	}

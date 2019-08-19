@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,26 +32,31 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public class MovieTheaterServiceTest {
 	
 	@InjectMocks
-	private MovieTheaterService movieTheaterService;
-
+	public MovieTheaterService movieTheaterService;
 	@Mock
-	private MovieTheaterRepository movieTheaterRepository;
-	
+	public MovieTheaterRepository movieTheaterRepository;
 	@Mock
-	private MoviesService movieService;
-
-	private List<MovieTheater> movieTheaters;
-	private List<ExhibitionDate> exhibitionDates;
-	private MovieTheater rosaSilva;
-	private Movie lionKing, tedBundy;
+	public MoviesService movieService;
+	@Mock
+	public MovieTheater rosaSilva;
+	@Mock
+	public Movie lionKing, tedBundy;
+	@Mock
+	public List<Movie> movies;
+	@Mock
+	public List<ExhibitionDate> exhibitionDates;
+	public List<MovieTheater> movieTheaters;
 
 	@Before
 	public void before() throws JsonParseException, JsonMappingException, IOException {
+		this.exhibitionDates = Arrays.asList(new ExhibitionDate(new Date()), new ExhibitionDate(new Date()));
 		this.rosaSilva = new MovieTheater("5d585dce83694d125d7cec40", "420818");
 		this.lionKing = new Movie("5d585dce83694d125d7cec40", "420818", "O Rei Leão", "");
 		this.tedBundy = new Movie("5d585dde83694d125d7cec42", "457799", "Ted Bundy", "");
-		this.exhibitionDates = Arrays.asList(new ExhibitionDate(new Date()), new ExhibitionDate(new Date()));
-		this.movieTheaters = List.of(rosaSilva);
+
+		this.lionKing.getExhibitionDates().addAll(exhibitionDates);
+		this.movies = Arrays.asList(lionKing, tedBundy);
+		this.movieTheaters = Arrays.asList(rosaSilva);
 	}
 
 	@Test
@@ -119,10 +125,23 @@ public class MovieTheaterServiceTest {
 	
 	@Test
 	public void testAddExibithionDate() throws ObjectNotFoundException {
-		Mockito.when(rosaSilva.getMovies()).thenReturn(Arrays.asList(lionKing, tedBundy));
-		Mockito.when(movieTheaterRepository.findById(anyString())).thenReturn(Optional.of(this.rosaSilva));
+		MovieTheater movieTheater = Mockito.spy(MovieTheater.class);
+		Mockito.when(movieTheater.getMovies()).thenReturn(movies);
+		Mockito.when(movieTheaterRepository.findById(anyString())).thenReturn(Optional.of(movieTheater));
 
 		movieTheaterService.addExibithionDate(rosaSilva.getId(), lionKing.getInternalId(), exhibitionDates);
-		verify(movieTheaterRepository).save(rosaSilva);
+		verify(movieTheaterRepository).save(movieTheater);
+		Assert.assertFalse(lionKing.getExhibitionDates().isEmpty());
+	}
+	
+	@Test
+	public void testRemoveExibithionDate() throws ObjectNotFoundException {
+		MovieTheater movieTheater = Mockito.spy(MovieTheater.class);
+		Mockito.when(movieTheater.getMovies()).thenReturn(movies);
+		Mockito.when(movieTheaterRepository.findById(anyString())).thenReturn(Optional.of(movieTheater));
+
+		movieTheaterService.removeExibithionDate(rosaSilva.getId(), lionKing.getInternalId(), exhibitionDates);
+		verify(movieTheaterRepository).save(movieTheater);
+		Assert.assertTrue(lionKing.getExhibitionDates().isEmpty());
 	}
 }

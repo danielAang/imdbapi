@@ -46,7 +46,7 @@ public class MovieServiceTest {
 	public void before() throws JsonParseException, JsonMappingException, IOException {
 		lionKing = new Movie("5d585dce83694d125d7cec40", "420818", "O Rei Leão", "");
 		onceUponATime = new Movie("5d585dde83694d125d7cec41", "466272", "Era uma vez em Hollywood", "");
-		movies = List.of(lionKing, onceUponATime);
+		movies = Arrays.asList(lionKing, onceUponATime);
 	}
 
 	@Test
