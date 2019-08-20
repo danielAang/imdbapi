@@ -1,12 +1,24 @@
 package com.dan.imdbapi.service;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
+import com.dan.imdbapi.dto.GenreCount;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.repository.MovieRepository;
@@ -21,6 +33,9 @@ public class MoviesService {
 
 	@Autowired
 	private MovieRepository repository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	public List<Movie> getAll() throws ObjectNotFoundException {
 		List<Movie> movies = repository.findAll();
@@ -59,4 +74,15 @@ public class MoviesService {
 		}
 	}
 
+	public List<GenreCount> countCategories() {
+		Aggregation agg = newAggregation(
+				unwind("genreIds"),
+			    group("genreIds").count().as("count"),
+			    project("count").and("genreId").previousOperation(),
+			    sort(new Sort(Direction.DESC, "count"))
+			);
+		AggregationResults<GenreCount> results = mongoTemplate.aggregate(agg, "movie", GenreCount.class);
+		List<GenreCount> genreCount = results.getMappedResults();
+		return genreCount;
+	}
 }

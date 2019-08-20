@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dan.imdbapi.dto.GenreCount;
 import com.dan.imdbapi.exception.ObjectNotFoundException;
 import com.dan.imdbapi.model.Movie;
 import com.dan.imdbapi.service.MoviesService;
@@ -71,5 +72,12 @@ public class MovieController {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		else
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+	
+	@ApiOperation(value = "Retrieves each movie category with respective occurencies count")
+	@GetMapping(value = "/genreCount")
+	public ResponseEntity<List<GenreCount>> getCount() {
+		List<GenreCount> countCategories = service.countCategories();
+		return ResponseEntity.status(HttpStatus.OK).body(countCategories);
 	}
 }
