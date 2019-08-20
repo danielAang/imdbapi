@@ -21,4 +21,4 @@ java -jar target/imdbapi-0.0.1-SNAPSHOT.jar
 ## Documentação :green_book:
 
 Para acessar documentação inicie a aplicação e acesse
-[Swagger](https://localhost:8080/api/swagger-ui.html#/)
+[Swagger](http://localhost:8080/api/swagger-ui.html#/)
